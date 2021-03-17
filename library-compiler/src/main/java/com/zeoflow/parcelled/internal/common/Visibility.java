@@ -28,8 +28,8 @@ import static javax.lang.model.element.ElementKind.PACKAGE;
 /**
  * Represents the visibility of a given {@link Element}: {@code public}, {@code protected},
  * {@code private} or default/package-private.
- * <p/>
- * <p>The constants for this enum are ordered according by increasing visibility.
+ *
+ * <p>The constants for this enum are ordered according by increasing visibility.</p>
  */
 public enum Visibility
 {

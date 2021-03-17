@@ -24,21 +24,6 @@ import android.os.Parcel;
  * like {@link java.util.Date} objects or booleans, you can create a custom ParcelledTypeAdapter to
  * tell the Parcel extension how to parcel the object.
  *
- * <p>Here's an example ParcelledTypeAdapter for a Date object:
- *
- * <pre>
- * <code>
- * public class DateTypeAdapter implements ParcelledTypeAdapter<Date> {
- *   public Date fromParcel(Parcel in) {
- *     return new Date(in.readLong());
- *   }
- *
- *   public void toParcel(Date value, Parcel dest) {
- *     dest.writeLong(value.getTime());
- *   }
- * }
- * </code>
- * </pre>
  * <p>
  * You can tell the Parcel Extension to use this ParcelledTypeAdapter by using the {@link ParcelledAdapter}
  * annotation on any Date properties.
