@@ -18,28 +18,26 @@ To use it:
 1.  Open the `build.gradle` file for your application.
 2.  Make sure that the `repositories` section includes Google's Maven Repository
     `google()`. For example:
-
-    ```groovy
-      allprojects {
-        repositories {
-          google()
-          jcenter()
-        }
-      }
-    ```
+```groovy
+    allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+    }
+```
 
 3.  Add the library to the `dependencies` section:
+```groovy
+    dependencies {
+    // ...
+    def parcelled_version = "1.0.0"
 
-    ```groovy
-      dependencies {
-        // ...
-        def parcelled_version = "1.0.0"
-
-        implementation("com.zeoflow:parcelled-runtime:$parcelled_version")
-        annotationProcessor("com.zeoflow:parcelled-compiler:$parcelled_version")
-        // ...
-      }
-    ```
+    implementation("com.zeoflow:parcelled-runtime:$parcelled_version")
+    annotationProcessor("com.zeoflow:parcelled-compiler:$parcelled_version")
+    // ...
+    }
+```
 
 ### 2. Usage
   #### 2.1 Import
