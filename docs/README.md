@@ -19,59 +19,59 @@ To use it:
 2.  Make sure that the `repositories` section includes Google's Maven Repository
     `google()`. For example:
 ```groovy
-    allprojects {
+allprojects {
     repositories {
         google()
         jcenter()
     }
-    }
+}
 ```
 
 3.  Add the library to the `dependencies` section:
 ```groovy
-    dependencies {
+dependencies {
     // ...
     def parcelled_version = "1.0.0"
 
     implementation("com.zeoflow:parcelled-runtime:$parcelled_version")
     annotationProcessor("com.zeoflow:parcelled-compiler:$parcelled_version")
     // ...
-    }
+}
 ```
 
 ### 2. Usage
-  #### 2.1 Import
-  ```java
-  import com.zeoflow.parcelled.Parcelled;
-  import com.zeoflow.parcelled.ParcelledAdapter;
-  import com.zeoflow.parcelled.ParcelledVersion;
-  ```
+#### 2.1 Import
+```java
+import com.zeoflow.parcelled.Parcelled;
+import com.zeoflow.parcelled.ParcelledAdapter;
+import com.zeoflow.parcelled.ParcelledVersion;
+```
 
-  #### 2.2 Class Declaration
-  ```java
-  @Parcelled(version = 1)
-  public abstract class CustomBean implements Parcelable {
+#### 2.2 Class Declaration
+```java
+@Parcelled(version = 1)
+public abstract class CustomBean implements Parcelable {
 
-      @Nullable
-      public String firstName;
+    @Nullable
+    public String firstName;
 
-      @ParcelledVersion(after = 1, before = 2)
-      @Nullable
-      public String lastName;
+    @ParcelledVersion(after = 1, before = 2)
+    @Nullable
+    public String lastName;
 
-      @ParcelledAdapter(DateTypeAdapter.class)
-      @ParcelledVersion(before = 1)
-      public Date birthday;
+    @ParcelledAdapter(DateTypeAdapter.class)
+    @ParcelledVersion(before = 1)
+    public Date birthday;
 
-      public static CustomBean create(
-        @NonNull String firstName,
-        @NonNull String lastName,
-        @NonNull Date birthday
-      ) {
-          return new Parcelled_Person(firstName, lastName, birthday);
-      }
-  }
-  ```
+    public static CustomBean create(
+      @NonNull String firstName,
+      @NonNull String lastName,
+      @NonNull Date birthday
+    ) {
+        return new Parcelled_Person(firstName, lastName, birthday);
+    }
+}
+```
     
 ## License
     Copyright 2020 ZeoFlow
