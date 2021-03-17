@@ -1,0 +1,14 @@
+plugins {
+    id 'java-library'
+}
+
+// This module will be used in Android projects, need to be compatible with Java 1.8
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    compileOnly 'com.google.android:android:2.1.2'
+}
+
+apply from: '../buildSrc/upload.gradle'
