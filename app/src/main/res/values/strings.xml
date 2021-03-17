@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Parcelled</string>
+
+    <string name="title_activity_main">MainActivity</string>
+    <string name="full_name">Full name</string>
+    <string name="date_of_birth">dd-MM-yyyy</string>
+    <string name="age">Age</string>
+    <string name="formatName">Name: %1$s</string>
+    <string name="format_date">Date of birth: %1$s</string>
+    <string name="format_age">Age: %1$d</string>
+    <string name="city">City</string>
+    <string name="postCode">Postcode</string>
+    <string name="street">Street</string>
+    <string name="full_address">Address: %1$s %2$s, %3$s/%4$s</string>
+</resources>
