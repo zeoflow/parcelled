@@ -13,28 +13,34 @@ To use it:
 1.  Open the `build.gradle` file for your application.
 2.  Make sure that the `repositories` section includes Google's Maven Repository
     `google()`. For example:
-
-    ```groovy
-      allprojects {
-        repositories {
-          google()
-          jcenter()
-        }
-      }
-    ```
+```groovy
+  allprojects {
+    repositories {
+      google()
+      jcenter()
+    }
+  }
+```
 
 3.  Add the library to the `dependencies` section:
+```groovy
+dependencies {
+    // ...
 
-    ```groovy
-      dependencies {
-        // ...
-        def parcelled_version = "1.0.0"
+    // parcelled version
+    def parcelled_version = "1.0.0"
 
-        implementation("com.zeoflow:parcelled-runtime:$parcelled_version")
-        annotationProcessor("com.zeoflow:parcelled-compiler:$parcelled_version")
-        // ...
-      }
-    ```
+    // Java Project
+    implementation("com.zeoflow:parcelled-runtime:$parcelled_version")
+    annotationProcessor("com.zeoflow:parcelled-compiler:$parcelled_version")
+
+    // Kotlin Project
+    implementation("com.zeoflow:parcelled-runtime:$parcelled_version")
+    kapt("com.zeoflow:parcelled-compiler:$parcelled_version")
+
+    // ...
+}
+```
 
 Visit [MVN Repository](https://mvnrepository.com/artifact/com.zeoflow/parcelled)
 to find the latest version of the library.
