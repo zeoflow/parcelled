@@ -64,10 +64,10 @@ public class PersonActivity extends AppCompatActivity
             date.setText(getString(R.string.format_date, person.birthday.toString()));
             age.setText(getString(R.string.format_age, person.age));
             fullAddress.setText(getString(R.string.full_address,
-                    TextUtils.isEmpty(person.address.street) ? "<street>" : person.address.street,
-                    TextUtils.isEmpty(person.address.postCode) ? "<PC>" : person.address.postCode,
-                    TextUtils.isEmpty(person.address.city) ? "<city>" : person.address.city,
-                    TextUtils.isEmpty(person.address.country) ? "<country>" : person.address.country));
+                    TextUtils.isEmpty(person.address.street) ? "street: " : person.address.street,
+                    TextUtils.isEmpty(person.address.postCode) ? "\npost code: " : person.address.postCode,
+                    TextUtils.isEmpty(person.address.city) ? "\ncity: " : person.address.city,
+                    TextUtils.isEmpty(person.address.country) ? "\ncountry: " : person.address.country));
         }
     }
 
