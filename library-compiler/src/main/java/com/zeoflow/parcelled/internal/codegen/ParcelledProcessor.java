@@ -32,6 +32,7 @@ import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.zeoflow.parcelled.Default;
 import com.zeoflow.parcelled.Parcelled;
 import com.zeoflow.parcelled.ParcelledAdapter;
 import com.zeoflow.parcelled.ParcelledVersion;
@@ -54,6 +55,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.MirroredTypeException;
@@ -130,11 +132,21 @@ public final class ParcelledProcessor extends AbstractProcessor
 
         checkModifiersIfNested(type);
 
+        // get the fully-qualified interface name
+        String fqInterfaceName = generatedInterfaceName(type);
+        // interface name
+        String interfaceName = TypeUtil.simpleNameOf(fqInterfaceName);
+
+        String sourceInterface = generateInterface(type, interfaceName, type.getSimpleName().toString());
+        sourceInterface = Reformatter.fixup(sourceInterface);
+        writeSourceFile(fqInterfaceName, sourceInterface, type);
+
         // get the fully-qualified class name
         String fqClassName = generatedSubclassName(type);
         // class name
         String className = TypeUtil.simpleNameOf(fqClassName);
-        String source = generateClass(type, className, type.getSimpleName().toString());
+
+        String source = generateClass(type, className, interfaceName, type.getSimpleName().toString());
         source = Reformatter.fixup(source);
         writeSourceFile(fqClassName, source, type);
 
@@ -155,7 +167,8 @@ public final class ParcelledProcessor extends AbstractProcessor
                     "Could not write generated class " + className + ": " + e);
         }
     }
-    private String generateClass(TypeElement type, String className, String classToExtend)
+
+    private String generateClass(TypeElement type, String className, String interfaceName, String classToExtend)
     {
         if (type == null)
         {
@@ -188,6 +201,7 @@ public final class ParcelledProcessor extends AbstractProcessor
         // Generate the Parcelled_$ class
         String pkg = TypeUtil.packageNameOf(type);
         TypeName classTypeName = ClassName.get(pkg, className);
+        TypeName interfaceTypeName = ClassName.get(pkg, interfaceName);
         assert className != null;
         // generate writeToParcel()
         TypeSpec.Builder subClass = TypeSpec.classBuilder(className)
@@ -195,8 +209,13 @@ public final class ParcelledProcessor extends AbstractProcessor
                 .addField(TypeName.INT, "version", PRIVATE)
                 // Class must be always final
                 .addModifiers(FINAL)
+                .addSuperinterface(interfaceTypeName)
+                // overrides IParcelled_Address
+                .addMethod(generateIParcelled(properties))
                 // extends from original abstract class
                 .superclass(ClassName.get(pkg, classToExtend))
+                // Add the AUDO-DEFAULT constructor
+                .addMethod(generateAutoConstructor(properties))
                 // Add the DEFAULT constructor
                 .addMethod(generateConstructor(properties))
                 // Add the private constructor
@@ -221,6 +240,65 @@ public final class ParcelledProcessor extends AbstractProcessor
 
         JavaFile javaFile = JavaFile.builder(pkg, subClass.build()).build();
         return javaFile.toString();
+    }
+
+    private String generateInterface(TypeElement type, String className, String classToExtend)
+    {
+        if (type == null)
+        {
+            mErrorReporter.abortWithError("generateClass was invoked with null type", null);
+        }
+        if (className == null)
+        {
+            mErrorReporter.abortWithError("generateClass was invoked with null class name", type);
+        }
+        if (classToExtend == null)
+        {
+            mErrorReporter.abortWithError("generateClass was invoked with null parent class", type);
+        }
+        assert type != null;
+        List<VariableElement> nonPrivateFields = getParcelableFieldsOrError(type);
+        if (nonPrivateFields.isEmpty())
+        {
+            mErrorReporter.abortWithError("generateClass error, all fields are declared PRIVATE", type);
+        }
+
+        // get the properties
+        ImmutableList<Property> properties = buildProperties(nonPrivateFields);
+
+        // Generate the Parcelled_$ class
+        assert className != null;
+        // generate writeToParcel()
+        TypeSpec.Builder subClass = TypeSpec.interfaceBuilder(className)
+                // Add the private constructor
+                .addModifiers(PUBLIC)
+                .addMethod(generateInterfaceSet(properties));
+
+        String pkg = TypeUtil.packageNameOf(type);
+        JavaFile javaFile = JavaFile.builder(pkg, subClass.build()).build();
+        return javaFile.toString();
+    }
+
+    private MethodSpec generateInterfaceSet(ImmutableList<Property> properties)
+    {
+
+        MethodSpec.Builder builder = MethodSpec.methodBuilder("setValues")
+                .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT);
+        builder.addJavadoc("Values Setter");
+        builder.addJavadoc("\n");
+
+        List<ParameterSpec> params = Lists.newArrayListWithCapacity(properties.size());
+        for (Property property : properties)
+        {
+            params.add(ParameterSpec.builder(property.typeName, property.fieldName).build());
+        }
+        for (ParameterSpec param : params)
+        {
+            builder.addJavadoc("\n@param " + param.name + " {@link " + param.type + "}");
+            builder.addParameter(param.type, param.name);
+        }
+
+        return builder.build();
     }
 
     private ImmutableMap<TypeMirror, FieldSpec> getTypeAdapters(ImmutableList<Property> properties)
@@ -280,6 +358,7 @@ public final class ParcelledProcessor extends AbstractProcessor
 
         return nonPrivateFields;
     }
+
     private MethodSpec generateConstructor(ImmutableList<Property> properties)
     {
 
@@ -291,7 +370,7 @@ public final class ParcelledProcessor extends AbstractProcessor
 
         MethodSpec.Builder builder = MethodSpec.constructorBuilder()
                 .addParameters(params);
-        builder.addJavadoc("Class builder");
+        builder.addJavadoc("Constructor");
         builder.addJavadoc("\n");
         for (ParameterSpec param : params)
         {
@@ -301,6 +380,34 @@ public final class ParcelledProcessor extends AbstractProcessor
 
         return builder.build();
     }
+
+    private MethodSpec generateAutoConstructor(ImmutableList<Property> properties)
+    {
+        MethodSpec.Builder builder = MethodSpec.constructorBuilder();
+        builder.addJavadoc("Auto Constructor");
+        builder.addJavadoc("\n");
+
+        List<ParameterSpec> params = Lists.newArrayListWithCapacity(properties.size());
+        for (Property property : properties)
+        {
+            params.add(ParameterSpec.builder(property.typeName, property.fieldName).build());
+        }
+        for (int i=0; i<params.size(); i++)
+        {
+            ParameterSpec param = params.get(i);
+            builder.addJavadoc("\n@param " + param.name + " {@link " + param.type + "}");
+            if (!properties.get(i).getDefaultCode().equals(""))
+            {
+                builder.addStatement("this.$N = $N", param.name, properties.get(i).getDefaultCode());
+            } else
+            {
+                builder.addStatement("this.$N = $N", param.name, param.name);
+            }
+        }
+
+        return builder.build();
+    }
+
     private MethodSpec generateConstructorFromParcel(
             ProcessingEnvironment env,
             ImmutableList<Property> properties,
@@ -371,6 +478,12 @@ public final class ParcelledProcessor extends AbstractProcessor
         return generatedClassName(type, Strings.repeat("$", 0) + classNameSuffix);
     }
 
+    private String generatedInterfaceName(TypeElement type)
+    {
+        String classNameSuffix = "IParcelled_";
+        return generatedClassName(type, Strings.repeat("$", 0) + classNameSuffix);
+    }
+
     private String generatedClassName(TypeElement type, String prefix)
     {
         StringBuilder name = new StringBuilder(type.getSimpleName().toString());
@@ -427,6 +540,27 @@ public final class ParcelledProcessor extends AbstractProcessor
                 .returns(int.class)
                 .addStatement("return 0")
                 .build();
+    }
+
+    private MethodSpec generateIParcelled(ImmutableList<Property> properties)
+    {
+        MethodSpec.Builder builder = MethodSpec.methodBuilder("setValues")
+                .addAnnotation(Override.class)
+                .addModifiers(PUBLIC);
+
+        List<ParameterSpec> params = Lists.newArrayListWithCapacity(properties.size());
+        for (Property property : properties)
+        {
+            params.add(ParameterSpec.builder(property.typeName, property.fieldName).build());
+        }
+        for (ParameterSpec param : params)
+        {
+            builder.addJavadoc("\n@param " + param.name + " {@link " + param.type + "}");
+            builder.addParameter(param.type, param.name);
+            builder.addStatement("this.$N = $N", param.name, param.name);
+        }
+
+        return builder.build();
     }
 
     private FieldSpec generateCreator(TypeName type)
@@ -520,6 +654,7 @@ public final class ParcelledProcessor extends AbstractProcessor
         final VariableElement element;
         final TypeName typeName;
         final ImmutableSet<String> annotations;
+        String defaultCode = "";
         final int version;
         final int afterVersion;
         final int beforeVersion;
@@ -546,6 +681,9 @@ public final class ParcelledProcessor extends AbstractProcessor
 
             }
 
+            Default defaultCode = element.getAnnotation(Default.class);
+            this.defaultCode = defaultCode == null ? "" : defaultCode.code();
+
             // get the element version, default 0
             ParcelledVersion parcelledVersion = element.getAnnotation(ParcelledVersion.class);
             this.version = parcelledVersion == null ? 0 : parcelledVersion.after();
@@ -566,6 +704,11 @@ public final class ParcelledProcessor extends AbstractProcessor
         public int getBeforeVersion()
         {
             return this.beforeVersion;
+        }
+
+        public String getDefaultCode()
+        {
+            return this.defaultCode;
         }
 
         private ImmutableSet<String> getAnnotations(VariableElement element)
