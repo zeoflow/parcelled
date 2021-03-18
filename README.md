@@ -31,10 +31,18 @@ allprojects {
 ```groovy
 dependencies {
     // ...
+
+    // parcelled version
     def parcelled_version = "1.0.0"
 
+    // Java Project
     implementation("com.zeoflow:parcelled-runtime:$parcelled_version")
     annotationProcessor("com.zeoflow:parcelled-compiler:$parcelled_version")
+
+    // Kotlin Project
+    implementation("com.zeoflow:parcelled-runtime:$parcelled_version")
+    kapt("com.zeoflow:parcelled-compiler:$parcelled_version")
+
     // ...
 }
 ```
