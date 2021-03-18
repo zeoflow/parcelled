@@ -16,23 +16,33 @@ package com.zeoflow.parcelled.demo.model;
 
 import android.os.Parcelable;
 
+import com.zeoflow.parcelled.Default;
 import com.zeoflow.parcelled.Parcelled;
 
 @Parcelled
 public abstract class Address implements Parcelable
 {
 
+    @Default(code = "null")
     public String street;
 
+    @Default(code = "null")
     public String postCode;
 
+    @Default(code = "null")
     public String city;
 
+    @Default(code = "null")
     public String country;
 
     public static Address create(String street, String postCode, String city, String country)
     {
         return new Parcelled_Address(street, postCode, city, country);
+    }
+
+    public static Address create()
+    {
+        return new Parcelled_Address();
     }
 
 }

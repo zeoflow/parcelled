@@ -50,6 +50,7 @@ dependencies {
 ### 2. Usage
 #### 2.1 Import
 ```java
+import com.zeoflow.parcelled.Default;
 import com.zeoflow.parcelled.Parcelled;
 import com.zeoflow.parcelled.ParcelledAdapter;
 import com.zeoflow.parcelled.ParcelledVersion;
@@ -61,6 +62,7 @@ import com.zeoflow.parcelled.ParcelledVersion;
 public abstract class CustomBean implements Parcelable {
 
     @Nullable
+    @Default(code = "null")
     public String firstName;
 
     @ParcelledVersion(after = 1, before = 2)
@@ -69,6 +71,7 @@ public abstract class CustomBean implements Parcelable {
 
     @ParcelledAdapter(DateTypeAdapter.class)
     @ParcelledVersion(before = 1)
+    @Default(code = "new Date()")
     public Date birthday;
 
     public static CustomBean create(
