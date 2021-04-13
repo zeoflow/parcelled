@@ -19,7 +19,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.ArrayList;
 
 /**
  * An annotation to indicate the auto-parcel that the annotated class needs to be {@link android.os.Parcelable}

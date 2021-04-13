@@ -196,8 +196,8 @@ public final class MoreTypes
                 {
                     ComparedElements comparedElements =
                             new ComparedElements(
-                                    a, ImmutableList.<TypeMirror>copyOf(aArguments),
-                                    b, ImmutableList.<TypeMirror>copyOf(bArguments));
+                                    a, ImmutableList.copyOf(aArguments),
+                                    b, ImmutableList.copyOf(bArguments));
                     Set<ComparedElements> newVisiting = new HashSet<ComparedElements>(visiting);
                     newVisiting.add(comparedElements);
                     return newVisiting;
@@ -303,13 +303,13 @@ public final class MoreTypes
         @Override
         protected boolean doEquivalent(TypeMirror a, TypeMirror b)
         {
-            return MoreTypes.equal(a, b, ImmutableSet.<ComparedElements>of());
+            return MoreTypes.equal(a, b, ImmutableSet.of());
         }
 
         @Override
         protected int doHash(TypeMirror t)
         {
-            return MoreTypes.hash(t, ImmutableSet.<Element>of());
+            return MoreTypes.hash(t, ImmutableSet.of());
         }
     };
     private static final TypeVisitor<Element, Void> AS_ELEMENT_VISITOR =
@@ -830,7 +830,7 @@ public final class MoreTypes
                 }), null);
         return superclass != null
                 ? Optional.of(MoreTypes.asDeclared(superclass))
-                : Optional.<DeclaredType>absent();
+                : Optional.absent();
     }
     /**
      * Resolves a {@link VariableElement} parameter to a method or constructor based on the given

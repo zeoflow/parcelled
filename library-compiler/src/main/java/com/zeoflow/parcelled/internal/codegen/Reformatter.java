@@ -47,7 +47,7 @@ class Reformatter
             {
                 i--;
             }
-            sb.append(s.substring(start, i + 1)).append('\n');
+            sb.append(s, start, i + 1).append('\n');
             start = nl + 1;
         }
         return sb.toString();
@@ -131,7 +131,7 @@ class Reformatter
                 sb.append(' ');
             } else
             {
-                sb.append(s.substring(start, end));
+                sb.append(s, start, end);
             }
         }
         return sb.toString();
