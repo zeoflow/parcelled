@@ -15,13 +15,13 @@
 package com.zeoflow.parcelled.internal.codegen;
 
 import com.google.common.collect.ImmutableSet;
-import com.squareup.javapoet.ArrayTypeName;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.CodeBlock;
-import com.squareup.javapoet.FieldSpec;
-import com.squareup.javapoet.ParameterSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
-import com.squareup.javapoet.TypeName;
+import com.zeoflow.jx.file.ArrayTypeName;
+import com.zeoflow.jx.file.ClassName;
+import com.zeoflow.jx.file.CodeBlock;
+import com.zeoflow.jx.file.FieldSpec;
+import com.zeoflow.jx.file.ParameterSpec;
+import com.zeoflow.jx.file.ParameterizedTypeName;
+import com.zeoflow.jx.file.TypeName;
 
 import java.util.Set;
 

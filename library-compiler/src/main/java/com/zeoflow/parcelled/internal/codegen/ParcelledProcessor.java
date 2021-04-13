@@ -20,18 +20,18 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.ArrayTypeName;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.CodeBlock;
-import com.squareup.javapoet.FieldSpec;
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.NameAllocator;
-import com.squareup.javapoet.ParameterSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
+import com.zeoflow.jx.file.AnnotationSpec;
+import com.zeoflow.jx.file.ArrayTypeName;
+import com.zeoflow.jx.file.ClassName;
+import com.zeoflow.jx.file.CodeBlock;
+import com.zeoflow.jx.file.FieldSpec;
+import com.zeoflow.jx.file.JavaFile;
+import com.zeoflow.jx.file.MethodSpec;
+import com.zeoflow.jx.file.NameAllocator;
+import com.zeoflow.jx.file.ParameterSpec;
+import com.zeoflow.jx.file.ParameterizedTypeName;
+import com.zeoflow.jx.file.TypeName;
+import com.zeoflow.jx.file.TypeSpec;
 import com.zeoflow.parcelled.Default;
 import com.zeoflow.parcelled.Parcelled;
 import com.zeoflow.parcelled.ParcelledAdapter;
@@ -681,6 +681,7 @@ public final class ParcelledProcessor extends AbstractProcessor
 
             }
 
+            element.getConstantValue();
             Default defaultCode = element.getAnnotation(Default.class);
             this.defaultCode = defaultCode == null ? "" : defaultCode.code();
 
