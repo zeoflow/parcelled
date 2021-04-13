@@ -392,7 +392,7 @@ public final class ParcelledProcessor extends AbstractProcessor
         {
             params.add(ParameterSpec.builder(property.typeName, property.fieldName).build());
         }
-        for (int i = 0; i < params.size(); i++)
+        for (int i=0; i<params.size(); i++)
         {
             ParameterSpec param = params.get(i);
             builder.addJavadoc("\n@param " + param.name + " {@link " + param.type + "}");
@@ -654,10 +654,10 @@ public final class ParcelledProcessor extends AbstractProcessor
         final VariableElement element;
         final TypeName typeName;
         final ImmutableSet<String> annotations;
+        String defaultCode = "";
         final int version;
         final int afterVersion;
         final int beforeVersion;
-        String defaultCode = "";
         TypeMirror typeAdapter;
 
         Property(String fieldName, VariableElement element)
